@@ -18,26 +18,38 @@ export default function page() {
 
   return (
     <div className="max-w-xl min-w-lg">
-      <header className="w-full uppercase text-4xl text-white font-bold tracking-[1rem] flex items-center justify-between">
-        Todo
-        {isLight ? 
-          <MoonStar className="w-6 h-6 cursor-pointer" onClick={()=>setIsLight(false)} /> : 
-          <Sun className="w-6 h-6 cursor-pointer" onClick={()=>setIsLight(true)} />}
-          {/* TODO: when hover on the sun or moon show floating change theme div */}
+      <header className="w-full text-white flex items-center justify-between">
+        <h1 className="uppercase text-4xl font-bold tracking-[1rem]">Todo</h1>
+
+        <div className="relative group">
+          {isLight ? 
+            <MoonStar className="w-6 h-6 cursor-pointer" onClick={()=>setIsLight(false)} /> : 
+            <Sun className="w-6 h-6 cursor-pointer" onClick={()=>setIsLight(true)} />}
+
+          {/* Floating tooltip */}
+          <div className="absolute top-0 right-0 translate-x-full
+            bg-white text-black text-sm px-2 pt-1 rounded 
+            opacity-0 group-hover:opacity-100 
+            transition-opacity duration-500 pointer-events-none
+            whitespace-nowrap shadow-lg"
+          >
+            {isLight ? "Switch to dark mode" : "Switch to light mode"}
+          </div>
+        </div>
       </header>
 
-      <div className="my-8">
+      <form className="my-8">
         <input
           type="text"
           name="task"
           value={newTask}
           placeholder="Create a new todo..."
           onChange={(e) => setNewTask(e.target.value)}
-          className="w-full bg-secondary px-6 py-4 rounded text-lg shadow-2xl focus-visible:border-0 outline-0"
+          className="w-full bg-secondary px-6 py-4 rounded text-lg shadow-xl focus-visible:border-0 outline-0"
         />
 
         <TaskList />
-      </div>
+      </form>
     </div>
   );
 }
