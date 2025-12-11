@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "Jog around the park"
+  },
+  {
+    "id": 2,
+    "name": "10 mins meditation"
+  },
+  {
+    "id": 3,
+    "name": "Read for 1 hour"
+  },
+  {
+    "id": 4,
+    "name": "Go shopping"
+  },
+  {
+    "id": 5,
+    "name": "Drink water"
+  }
+]
