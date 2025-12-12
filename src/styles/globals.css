@@ -6,7 +6,9 @@
   --foreground: #171717;
   --secondary: white;
   --secondary-foreground: hsl(234, 39%, 85%); /* Purple 300 */
-  --input: hsl(235, 19%, 35%); /* Purple 300 */
+  --input: hsl(235, 19%, 35%); /* Navy 850 */
+  --accent: hsl(220, 98%, 61%);
+  --accent-foreground: hsl(235, 16%, 43%); /* Purple 600 */
 }
 
 .dark {
@@ -23,11 +25,11 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --blue-500: hsl(220, 98%, 61%);
   --color-secondary: var(--secondary);
   --color-input: var(--input);
   --color-secondary-foreground: var(--secondary-foreground);
-  /* --check-background: linear-gradient hsl(192, 100%, 67%) to hsl(280, 87%, 65%); */
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
 }
 
 body {
