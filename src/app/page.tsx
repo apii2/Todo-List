@@ -1,7 +1,7 @@
 "use client";
 
 import TaskList from "@/components/TaskList";
-import { Moon, MoonStar, Sun } from "lucide-react";
+import { MoonStar, Pencil, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function page() {
@@ -15,6 +15,12 @@ export default function page() {
       document.documentElement.classList.add("dark");
     }
   },[isLight]);
+
+  const handleSubmit = (e:React.FormEvent<HTMLFormElement>)=> {
+    e.preventDefault();
+    if(!newTask) return;
+    console.log('New Task...',newTask);
+  }
 
   return (
     <div className="max-w-xl min-w-lg">
@@ -38,15 +44,21 @@ export default function page() {
         </div>
       </header>
 
-      <form className="my-8">
-        <input
-          type="text"
-          name="task"
-          value={newTask}
-          placeholder="Create a new todo..."
-          onChange={(e) => setNewTask(e.target.value)}
-          className="w-full bg-secondary px-6 py-4 rounded text-lg shadow-xl focus-visible:border-0 outline-0"
-        />
+      <form className="my-8" onSubmit={(e)=>handleSubmit(e)}>
+        <div className="flex items-center justify-between w-full bg-secondary shadow-xl rounded px-6">
+          <input
+            type="text"
+            name="task"
+            value={newTask}
+            placeholder="Create a new todo..."
+            onChange={(e) => setNewTask(e.target.value)}
+            className="w-full pt-5 pb-4 text-lg focus-visible:border-0 outline-0"
+          />
+
+          <button type="submit">
+            <Pencil className="w-5 h-5 text-input cursor-pointer" />
+          </button>
+        </div>
 
         <TaskList />
       </form>
