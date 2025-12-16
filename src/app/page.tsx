@@ -34,7 +34,7 @@ export default function page() {
       setNewTask('');
       return;
     }
-    setTasks(prev=>[...prev, {id: prev[tasks.length-1]?.id+1, name: newTask.trim(), completed: false}]);
+    setTasks(prev=>[...prev, {id: prev[tasks.length-1]?.id+1 || prev.length+1, name: newTask.trim(), completed: false}]);
     setNewTask('');
   }
 
