@@ -1,7 +1,6 @@
 "use client";
 
 import { TaskType } from "@/types/TaskType";
-import data from "../data/data.json";
 import { Check, ClipboardX, X } from "lucide-react";
 import { useState } from "react";
 
@@ -20,14 +19,14 @@ const filters: { id: number; label: "All" | "Active" | "Completed" }[] = [
   },
 ];
 
-export default function TaskList() {
+export default function TaskList({list}:{list: TaskType[]}) {
   const [filterOption, setFilterOption] = useState<"All" | "Active" | "Completed">("All");
 
   return (
     <div className="mt-5 shadow-2xl rounded overflow-hidden">
-      {data.length ? (
+      {list.length ? (
         <>
-          {data.map((task: TaskType) => (
+          {list.map((task: TaskType) => (
             <div
               key={task.id}
               className="group bg-secondary relative text-lg px-6 py-4 not-last:border-b border-secondary-foreground 
@@ -65,7 +64,7 @@ export default function TaskList() {
           ))}
 
           <div className="bg-secondary flex items-center justify-between gap-3 px-6 py-4 text-sm text-accent-foreground">
-            <p>{data.length} items left</p>
+            <p>{list.length} items left</p>
 
             <div className="flex items-center gap-3 font-bold">
               {filters.map((filter) => (

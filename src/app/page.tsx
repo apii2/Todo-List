@@ -3,10 +3,14 @@
 import TaskList from "@/components/TaskList";
 import { MoonStar, Pencil, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import data from '@/data/data.json';
+import { TaskType } from "@/types/TaskType";
+import { toast } from "sonner";
 
 export default function page() {
   const [newTask, setNewTask] = useState("");
   const [isLight, setIsLight] = useState(true);
+  const [tasks, setTasks] = useState<TaskType[]>(data);
 
   useEffect(()=>{
     if (isLight) {
@@ -16,10 +20,20 @@ export default function page() {
     }
   },[isLight]);
 
+  useEffect(()=>{
+    console.log('task ',tasks);
+  },[tasks]);
+
   const handleSubmit = (e:React.FormEvent<HTMLFormElement>)=> {
     e.preventDefault();
     if(!newTask) return;
-    console.log('New Task...',newTask);
+
+    const taskAlreadyExist = tasks.find(task=>task.name===newTask.trim());
+    if(taskAlreadyExist) {
+      toast.warning('Task already added!');
+      return;
+    }
+    setTasks(prev=>[...prev, {id: prev.length+1, name: newTask.trim()}]);
   }
 
   return (
@@ -60,7 +74,7 @@ export default function page() {
           </button>
         </div>
 
-        <TaskList />
+        <TaskList list={tasks} />
       </form>
     </div>
   );
