@@ -31,9 +31,11 @@ export default function page() {
     const taskAlreadyExist = tasks.find(task=>task.name===newTask.trim());
     if(taskAlreadyExist) {
       toast.warning('Task already added!');
+      setNewTask('');
       return;
     }
-    setTasks(prev=>[...prev, {id: prev.length+1, name: newTask.trim()}]);
+    setTasks(prev=>[...prev, {id: prev[tasks.length-1]?.id+1, name: newTask.trim(), completed: false}]);
+    setNewTask('');
   }
 
   return (
@@ -70,15 +72,15 @@ export default function page() {
           />
 
           <button type="submit">
-            <Pencil className="w-5 h-5 text-input cursor-pointer" />
+            <Pencil className="w-5 h-5 text-input cursor-pointer hover:scale-110" />
           </button>
         </div>
 
-        <TaskList list={tasks} />
+        <TaskList list={tasks} setTasks={setTasks} />
 
-        <div className="text-accent-foreground text-center mt-10 text-sm">
+        {tasks.length>0 && <div className="text-accent-foreground text-center mt-10 text-sm">
           Drag and drop to reorder list
-        </div>
+        </div>}
       </form>
     </div>
   );

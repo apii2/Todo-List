@@ -1,22 +1,27 @@
 [
   {
     "id": 1,
-    "name": "Jog around the park"
+    "name": "Jog around the park",
+    "completed": false
   },
   {
     "id": 2,
-    "name": "10 mins meditation"
+    "name": "10 mins meditation",
+    "completed": false
   },
   {
     "id": 3,
-    "name": "Read for 1 hour"
+    "name": "Read for 1 hour",
+    "completed": false
   },
   {
     "id": 4,
-    "name": "Go shopping"
+    "name": "Go shopping",
+    "completed": false
   },
   {
     "id": 5,
-    "name": "Drink water"
+    "name": "Drink water",
+    "completed": false
   }
 ]
