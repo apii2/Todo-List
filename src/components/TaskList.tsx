@@ -23,7 +23,7 @@ export default function TaskList({list}:{list: TaskType[]}) {
   const [filterOption, setFilterOption] = useState<"All" | "Active" | "Completed">("All");
 
   return (
-    <div className="mt-5 shadow-2xl rounded overflow-hidden">
+    <div className="mt-5 shadow-[0_25px_50px_-15px_rgba(0,0,0,0.6)] rounded overflow-hidden">
       {list.length ? (
         <>
           {list.map((task: TaskType) => (

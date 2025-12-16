@@ -75,6 +75,10 @@ export default function page() {
         </div>
 
         <TaskList list={tasks} />
+
+        <div className="text-accent-foreground text-center mt-10 text-sm">
+          Drag and drop to reorder list
+        </div>
       </form>
     </div>
   );
