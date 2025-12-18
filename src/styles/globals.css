@@ -34,7 +34,7 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-hover: var(--hover); 
+  --color-hover: var(--hover);
   --color-error: var(--error);
 }
 
@@ -43,7 +43,21 @@ body {
   font-family: var(--font-josefin-sans), sans-serif;
   background: var(--background);
   background-image: var(--background-image);
-  @apply min-h-dvh bg-no-repeat! bg-fixed! bg-top! bg-size-[100%_38%]! flex items-start justify-center pt-20;
+  @apply min-h-screen w-screen bg-no-repeat! bg-fixed! bg-top! bg-size-[100%_38%]! flex items-start justify-center pt-20;
+}
+
+/* Ensure mobile viewport works correctly */
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  body {
+    background-size: 100% 30% !important;
+    padding-top: 4rem;
+  }
 }
 /* 
 ### Light Theme

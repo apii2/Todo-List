@@ -39,7 +39,7 @@ export default function page() {
   }
 
   return (
-    <div className="max-w-xl min-w-lg">
+    <div className="w-full max-w-xl min-h-screen md:min-w-lg">
       <header className="w-full text-white flex items-center justify-between">
         <h1 className="uppercase text-4xl font-bold tracking-[1rem]">Todo</h1>
 
