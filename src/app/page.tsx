@@ -39,7 +39,7 @@ export default function page() {
   }
 
   return (
-    <div className="w-full max-w-xl min-h-screen md:min-w-lg">
+    <div className="w-full max-w-[86%] sm:max-w-xl min-h-screen md:min-w-lg">
       <header className="w-full text-white flex items-center justify-between">
         <h1 className="uppercase text-4xl font-bold tracking-[1rem]">Todo</h1>
 
@@ -60,15 +60,15 @@ export default function page() {
         </div>
       </header>
 
-      <form className="my-8" onSubmit={(e)=>handleSubmit(e)}>
-        <div className="flex items-center justify-between w-full bg-secondary shadow-xl rounded px-6">
+      <form className="my-4 sm:my-8" onSubmit={(e)=>handleSubmit(e)}>
+        <div className="flex items-center justify-between w-full bg-secondary shadow-xl rounded px-4 sm:px-6">
           <input
             type="text"
             name="task"
             value={newTask}
             placeholder="Create a new todo..."
             onChange={(e) => setNewTask(e.target.value)}
-            className="w-full pt-5 pb-4 text-lg focus-visible:border-0 outline-0"
+            className="w-full pt-4 sm:pt-5 pb-3 sm:pb-4 text-lg focus-visible:border-0 outline-0"
           />
 
           <button type="submit">
@@ -78,7 +78,7 @@ export default function page() {
 
         <TaskList list={tasks} setTasks={setTasks} />
 
-        {tasks.length>0 && <div className="text-accent-foreground text-center mt-10 text-sm">
+        {tasks.length>0 && <div className="text-accent-foreground text-center mt-5 sm:mt-10 text-sm">
           Drag and drop to reorder list
         </div>}
       </form>
