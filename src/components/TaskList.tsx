@@ -1,9 +1,10 @@
 "use client";
 
 import { TaskType } from "@/types/TaskType";
-import { Check, ClipboardX, X } from "lucide-react";
+import { Check, ClipboardX, GripVertical, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 
 interface PropType {
   list: TaskType[];
@@ -24,6 +25,94 @@ const filters: { id: number; label: "All" | "Active" | "Completed" }[] = [
     label: "Completed",
   },
 ];
+
+// DraggableTask component
+function DraggableTask({ task, index, completeTask, removeTask }: {
+  task: TaskType;
+  index: number;
+  completeTask: (id: number) => void;
+  removeTask: (id: number) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    isDragging,
+  } = useDraggable({
+    id: task.id,
+  });
+
+  const { setNodeRef: setDroppableRef } = useDroppable({
+    id: task.id,
+  });
+
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    opacity: isDragging ? 0.8 : 1,
+    zIndex: isDragging ? 40 : 0,
+  };
+
+  return (
+    <div
+      ref={(node) => {
+        setNodeRef(node);
+        setDroppableRef(node);
+      }}
+      style={style}
+      className="group bg-secondary relative text-lg px-4 sm:px-6 py-3 sm:py-4 not-last:border-b border-secondary-foreground
+        text-input grid grid-cols-[1fr_8%_5%] xs:grid-cols-[1fr_5%_5%] items-center justify-between cursor-pointer"
+    >
+      <div className="grid grid-cols-[10%_1fr] items-center w-full min-w-0">
+        <input
+          type="checkbox"
+          id={task.name}
+          className="peer hidden"
+          checked={task.completed}
+          onChange={() => completeTask(task.id)}
+        />
+
+        <div
+          className="w-6 h-6 rounded-full overflow-hidden bg-secondary-foreground
+            group-hover:bg-[linear-gradient(140deg,hsl(192,100%,67%),hsl(280,87%,65%))]
+            peer-checked:bg-[linear-gradient(140deg,hsl(192,100%,67%),hsl(280,87%,65%))]
+            cursor-pointer flex items-center justify-center
+            relative
+            after:content-['']
+            after:w-5 after:h-5 after:rounded-full
+            after:bg-secondary
+            after:absolute after:transition-all after:ease-in-out
+            peer-checked:after:bg-transparent"
+        />
+        <Check
+          className="w-3.5 h-3.5 text-white hidden peer-checked:block transition-all ease-in-out
+            absolute top-0 bottom-0 my-auto translate-x-1.25"
+        />
+
+        <label
+          htmlFor={task.name}
+          className="peer-checked:line-through peer-checked:text-secondary-foreground mt-[3px] pl-2.5 sm:pl-0 w-full
+            lowercase [&:first-letter]:uppercase block break-all overflow-wrap-anywhere min-w-0"
+        >
+          {task.name}
+        </label>
+      </div>
+
+      <div
+        className="text-secondary-foreground hidden group-hover:flex items-center justify-center cursor-grab active:cursor-grabbing"
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical className="w-5 h-5" />
+      </div>
+
+      <X
+        className="text-secondary-foreground hidden group-hover:block"
+        onClick={() => removeTask(task.id)}
+      />
+    </div>
+  );
+}
 
 export default function TaskList({ list, setTasks }: PropType) {
   const [filterOption, setFilterOption] = useState<"All" | "Active" | "Completed">("All");
@@ -65,52 +154,14 @@ export default function TaskList({ list, setTasks }: PropType) {
     <>
       <div className="mt-5 shadow-[0_25px_50px_-15px_rgba(0,0,0,0.6)] rounded overflow-hidden">
         {filteredList.length ? (
-          filteredList.map((task: TaskType) => (
-            <div
+          filteredList.map((task: TaskType, index: number) => (
+            <DraggableTask
               key={task.id}
-              className="group bg-secondary relative text-lg px-4 sm:px-6 py-3 sm:py-4 not-last:border-b border-secondary-foreground 
-                text-input grid grid-cols-[1fr_8%] xs:grid-cols-[1fr_5%] items-center justify-between cursor-pointer"
-            >
-              <div className="grid grid-cols-[10%_1fr] items-center w-full min-w-0">
-                <input
-                  type="checkbox"
-                  id={task.name}
-                  className="peer hidden"
-                  checked={task.completed}
-                  onChange={() => completeTask(task.id)}
-                />
-
-                <div
-                  className="w-6 h-6 rounded-full overflow-hidden bg-secondary-foreground
-                    group-hover:bg-[linear-gradient(140deg,hsl(192,100%,67%),hsl(280,87%,65%))]
-                    peer-checked:bg-[linear-gradient(140deg,hsl(192,100%,67%),hsl(280,87%,65%))]
-                    cursor-pointer flex items-center justify-center
-                    relative
-                    after:content-['']
-                    after:w-5 after:h-5 after:rounded-full
-                    after:bg-secondary
-                    after:absolute after:transition-all after:ease-in-out
-                    peer-checked:after:bg-transparent"
-                />
-                <Check
-                  className="w-3.5 h-3.5 text-white hidden peer-checked:block transition-all ease-in-out 
-                    absolute top-0 bottom-0 my-auto translate-x-1.25"
-                />
-
-                <label
-                  htmlFor={task.name}
-                  className="peer-checked:line-through peer-checked:text-secondary-foreground mt-[3px] pl-2.5 sm:pl-0 w-full
-                    lowercase [&:first-letter]:uppercase block break-all overflow-wrap-anywhere min-w-0"
-                >
-                  {task.name}
-                </label>
-              </div>
-
-              <X
-                className="text-secondary-foreground hidden group-hover:block"
-                onClick={() => removeTask(task.id)}
-              />
-            </div>
+              task={task}
+              index={index}
+              completeTask={completeTask}
+              removeTask={removeTask}
+            />
           ))
         ) : (
           <div className="flex items-center justify-center gap-1 bg-secondary py-10 px-4 font-semibold text-error">
