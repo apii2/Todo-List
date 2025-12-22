@@ -1,13 +1,12 @@
 "use client";
 
 import TaskList from "@/components/TaskList";
-import { DndProvider } from "@/context/dnd";
 import { MoonStar, Pencil, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import data from '@/data/data.json';
 import { TaskType } from "@/types/TaskType";
 import { toast } from "sonner";
-import { DragEndEvent } from "@dnd-kit/core";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
 
 export default function page() {
   const [newTask, setNewTask] = useState("");
@@ -102,9 +101,9 @@ export default function page() {
           </button>
         </div>
 
-        <DndProvider onDragEnd={handleDragEnd}>
+        <DndContext onDragEnd={handleDragEnd}>
           <TaskList list={tasks} setTasks={setTasks} />
-        </DndProvider>
+        </DndContext>
 
         {tasks.length>0 && <div className="text-accent-foreground text-center mt-5 sm:mt-10 text-sm">
           Drag and drop to reorder list
