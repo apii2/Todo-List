@@ -1,14 +1,17 @@
 "use client";
 
 import { TaskType } from "@/types/TaskType";
-import { Check, ClipboardX, GripVertical, X } from "lucide-react";
+import { Check, ClipboardX, GripVertical, Loader, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
+import { deleteCompletedTodos, deleteTodo, toggleTodo } from "@/services/todoServices";
 
 interface PropType {
   list: TaskType[];
+  isLoading: boolean;
   setTasks: React.Dispatch<React.SetStateAction<TaskType[]>>;
+  setRefresh: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const filters: { id: number; label: "All" | "Active" | "Completed" }[] = [
@@ -52,6 +55,14 @@ function DraggableTask({ task, index, completeTask, removeTask }: {
     opacity: isDragging ? 0.8 : 1,
     zIndex: isDragging ? 40 : 0,
   };
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
     <div
@@ -114,7 +125,7 @@ function DraggableTask({ task, index, completeTask, removeTask }: {
   );
 }
 
-export default function TaskList({ list, setTasks }: PropType) {
+export default function TaskList({ list, isLoading, setTasks, setRefresh }: PropType) {
   const [filterOption, setFilterOption] = useState<"All" | "Active" | "Completed">("All");
   const [filteredList, setFilteredList] = useState<TaskType[]>(list);
 
@@ -128,23 +139,29 @@ export default function TaskList({ list, setTasks }: PropType) {
     }
   }, [list, filterOption]);
 
-  const completeTask = (taskId: number) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
+  const completeTask = async(taskId: number) => {
+    if(!taskId) {
+      toast.error("Failed to update task!");
+      return;
+    }
+    const taskToUpdate = list.find((task) => task.id === taskId);
+    await toggleTodo(taskId, !taskToUpdate?.completed);
+    setRefresh((prev) => prev + 1);
   };
 
-  const removeTask = (taskId: number) => {
-    setTasks((prev) => prev.filter((task) => task.id !== taskId));
-    toast.success("Task removed successfully!");
+  const removeTask = async(taskId: number) => {
+    if(!taskId) {
+      toast.error("Failed to delete task!");
+      return;
+    }
+    await deleteTodo(7);
+    setRefresh((prev) => prev + 1);
   };
-    
-  const removeCompletedTasks = () => {
-    if(list.filter((task => task.completed===true)).length>0) {
-      setTasks((prev) => prev.filter((task) => task.completed !== true));
-      toast.success("All the completed task removed successfully!");
+
+  const removeCompletedTasks = async () => {
+    if (list.filter((task => task.completed === true)).length > 0) {
+      await deleteCompletedTodos();
+      setRefresh((prev) => prev + 1);
       return;
     }
     toast.warning("No task is complete, nothing to remove!");
@@ -153,22 +170,28 @@ export default function TaskList({ list, setTasks }: PropType) {
   return (
     <>
       <div className="mt-5 shadow-[0_25px_50px_-15px_rgba(0,0,0,0.6)] rounded overflow-hidden">
-        {filteredList.length ? (
-          filteredList.map((task: TaskType, index: number) => (
-            <DraggableTask
-              key={task.id}
-              task={task}
-              index={index}
-              completeTask={completeTask}
-              removeTask={removeTask}
-            />
-          ))
-        ) : (
-          <div className="flex items-center justify-center gap-1 bg-secondary py-10 px-4 font-semibold text-error">
-            <ClipboardX className="w-10 h-10" />
-            Looks empty here… Add a task to begin!
+        {isLoading ? (
+          <div className="flex items-center justify-center gap-1 bg-secondary py-10 px-4 font-semibold text-accent-foreground">
+            <Loader className="w-10 h-10" />
+            Loading tasks…
           </div>
-        )}
+        ) : (
+          filteredList.length ? (
+            filteredList.map((task: TaskType, index: number) => (
+              <DraggableTask
+                key={task.id}
+                task={task}
+                index={index}
+                completeTask={completeTask}
+                removeTask={removeTask}
+              />
+            ))
+          ) : (
+            <div className="flex items-center justify-center gap-1 bg-secondary py-10 px-4 font-semibold text-error">
+              <ClipboardX className="w-10 h-10" />
+              Looks empty here… Add a task to begin!
+            </div>
+          ))}
 
         {/* Bottom Filter */}
         <div className="bg-secondary flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 text-sm text-accent-foreground">
