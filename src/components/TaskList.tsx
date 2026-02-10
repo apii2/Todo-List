@@ -5,13 +5,17 @@ import { Check, ClipboardX, GripVertical, Loader, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
-import { deleteCompletedTodos, deleteTodo, toggleTodo } from "@/services/todoServices";
+import {
+  deleteCompletedTodos,
+  deleteTodo,
+  toggleTodo,
+} from "@/services/todoServices";
 
 interface PropType {
   list: TaskType[];
   isLoading: boolean;
-  setTasks: React.Dispatch<React.SetStateAction<TaskType[]>>;
   setRefresh: React.Dispatch<React.SetStateAction<number>>;
+  error: Error | null;
 }
 
 const filters: { id: number; label: "All" | "Active" | "Completed" }[] = [
@@ -30,28 +34,30 @@ const filters: { id: number; label: "All" | "Active" | "Completed" }[] = [
 ];
 
 // DraggableTask component
-function DraggableTask({ task, index, completeTask, removeTask }: {
+function DraggableTask({
+  task,
+  index,
+  completeTask,
+  removeTask,
+}: {
   task: TaskType;
   index: number;
   completeTask: (id: number) => void;
   removeTask: (id: number) => void;
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    isDragging,
-  } = useDraggable({
-    id: task.id,
-  });
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: task.id,
+    });
 
   const { setNodeRef: setDroppableRef } = useDroppable({
     id: task.id,
   });
 
   const style = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transform: transform
+      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+      : undefined,
     opacity: isDragging ? 0.8 : 1,
     zIndex: isDragging ? 40 : 0,
   };
@@ -125,8 +131,15 @@ function DraggableTask({ task, index, completeTask, removeTask }: {
   );
 }
 
-export default function TaskList({ list, isLoading, setTasks, setRefresh }: PropType) {
-  const [filterOption, setFilterOption] = useState<"All" | "Active" | "Completed">("All");
+export default function TaskList({
+  list,
+  isLoading,
+  setRefresh,
+  error,
+}: PropType) {
+  const [filterOption, setFilterOption] = useState<
+    "All" | "Active" | "Completed"
+  >("All");
   const [filteredList, setFilteredList] = useState<TaskType[]>(list);
 
   useEffect(() => {
@@ -139,8 +152,8 @@ export default function TaskList({ list, isLoading, setTasks, setRefresh }: Prop
     }
   }, [list, filterOption]);
 
-  const completeTask = async(taskId: number) => {
-    if(!taskId) {
+  const completeTask = async (taskId: number) => {
+    if (!taskId) {
       toast.error("Failed to update task!");
       return;
     }
@@ -149,17 +162,17 @@ export default function TaskList({ list, isLoading, setTasks, setRefresh }: Prop
     setRefresh((prev) => prev + 1);
   };
 
-  const removeTask = async(taskId: number) => {
-    if(!taskId) {
+  const removeTask = async (taskId: number) => {
+    if (!taskId) {
       toast.error("Failed to delete task!");
       return;
     }
-    await deleteTodo(7);
+    await deleteTodo(taskId);
     setRefresh((prev) => prev + 1);
   };
 
   const removeCompletedTasks = async () => {
-    if (list.filter((task => task.completed === true)).length > 0) {
+    if (list.filter((task) => task.completed === true).length > 0) {
       await deleteCompletedTodos();
       setRefresh((prev) => prev + 1);
       return;
@@ -170,28 +183,32 @@ export default function TaskList({ list, isLoading, setTasks, setRefresh }: Prop
   return (
     <>
       <div className="mt-5 shadow-[0_25px_50px_-15px_rgba(0,0,0,0.6)] rounded overflow-hidden">
-        {isLoading ? (
+        {error ? (
+          <div className="flex items-center justify-center gap-1 bg-secondary py-10 px-4 font-semibold text-error">
+            <X className="w-10 h-10" />
+            Failed to load tasks! Please try again later.
+          </div>
+        ) : isLoading ? (
           <div className="flex items-center justify-center gap-1 bg-secondary py-10 px-4 font-semibold text-accent-foreground">
             <Loader className="w-10 h-10" />
             Loading tasks…
           </div>
+        ) : filteredList.length ? (
+          filteredList.map((task: TaskType, index: number) => (
+            <DraggableTask
+              key={task.id}
+              task={task}
+              index={index}
+              completeTask={completeTask}
+              removeTask={removeTask}
+            />
+          ))
         ) : (
-          filteredList.length ? (
-            filteredList.map((task: TaskType, index: number) => (
-              <DraggableTask
-                key={task.id}
-                task={task}
-                index={index}
-                completeTask={completeTask}
-                removeTask={removeTask}
-              />
-            ))
-          ) : (
-            <div className="flex items-center justify-center gap-1 bg-secondary py-10 px-4 font-semibold text-error">
-              <ClipboardX className="w-10 h-10" />
-              Looks empty here… Add a task to begin!
-            </div>
-          ))}
+          <div className="flex items-center justify-center gap-1 bg-secondary py-10 px-4 font-semibold text-error">
+            <ClipboardX className="w-10 h-10" />
+            Looks empty here… Add a task to begin!
+          </div>
+        )}
 
         {/* Bottom Filter */}
         <div className="bg-secondary flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 text-sm text-accent-foreground">

@@ -3,7 +3,6 @@
 import TaskList from "@/components/TaskList";
 import { MoonStar, Pencil, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
-import data from "@/data/data.json";
 import { TaskType } from "@/types/TaskType";
 import { toast } from "sonner";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
@@ -17,7 +16,7 @@ export default function Todo() {
   const [isLoading, setIsLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
 
-  const { data: todos, isLoading: todoLoading } = useQuery({
+  const { data: todos, isLoading: todoLoading, error } = useQuery({
     queryKey: ["todos", refresh],
     queryFn: getTodos,
   });
@@ -25,8 +24,8 @@ export default function Todo() {
   useEffect(() => {
     if (todos) {
       setTasks(todos.results);
-      setIsLoading(todoLoading);
     }
+    setIsLoading(todoLoading);
   }, [todos, todoLoading]);
 
   useEffect(() => {
@@ -125,7 +124,7 @@ export default function Todo() {
         </div>
 
         <DndContext onDragEnd={handleDragEnd}>
-          <TaskList list={tasks} isLoading={isLoading} setTasks={setTasks} setRefresh={setRefresh} />
+          <TaskList list={tasks} isLoading={isLoading} setRefresh={setRefresh} error={error} />
         </DndContext>
 
         {tasks.length > 0 && (

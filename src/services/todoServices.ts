@@ -6,7 +6,6 @@ const BASEURL = process.env.BASEURL || "http://127.0.0.1:8000/todos/";
 export const getTodos = async () => {
   try {
     const response = await axios.get(BASEURL);
-    console.log("Fetched todos: ", response.data);
     return response.data;
   } catch (error) {
     toast.error("Failed to fetch todos!");
@@ -51,7 +50,7 @@ export const deleteTodo = async (id: number) => {
 
 export const deleteCompletedTodos = async () => {
   try {
-    const response = await axios.delete(`${BASEURL}completed/delete`);
+    const response = await axios.delete(`${BASEURL}delete/completed`);
     toast.success(response.data.message);
     return response.data;
   } catch (error) {
