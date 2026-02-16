@@ -13,10 +13,9 @@ export default function Todo() {
   const [newTask, setNewTask] = useState("");
   const [isLight, setIsLight] = useState(true);
   const [tasks, setTasks] = useState<TaskType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
 
-  const { data: todos, isLoading: todoLoading, error } = useQuery({
+  const { data: todos, error } = useQuery({
     queryKey: ["todos", refresh],
     queryFn: getTodos,
   });
@@ -25,8 +24,7 @@ export default function Todo() {
     if (todos) {
       setTasks(todos.results);
     }
-    setIsLoading(todoLoading);
-  }, [todos, todoLoading]);
+  }, [todos]);
 
   useEffect(() => {
     if (isLight) {
@@ -124,7 +122,7 @@ export default function Todo() {
         </div>
 
         <DndContext onDragEnd={handleDragEnd}>
-          <TaskList list={tasks} isLoading={isLoading} setRefresh={setRefresh} error={error} />
+          <TaskList list={tasks} setRefresh={setRefresh} error={error} />
         </DndContext>
 
         {tasks.length > 0 && (

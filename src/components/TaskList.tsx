@@ -13,7 +13,6 @@ import {
 
 interface PropType {
   list: TaskType[];
-  isLoading: boolean;
   setRefresh: React.Dispatch<React.SetStateAction<number>>;
   error: Error | null;
 }
@@ -133,7 +132,6 @@ function DraggableTask({
 
 export default function TaskList({
   list,
-  isLoading,
   setRefresh,
   error,
 }: PropType) {
@@ -187,11 +185,6 @@ export default function TaskList({
           <div className="flex items-center justify-center gap-1 bg-secondary py-10 px-4 font-semibold text-error">
             <X className="w-10 h-10" />
             Failed to load tasks! Please try again later.
-          </div>
-        ) : isLoading ? (
-          <div className="flex items-center justify-center gap-1 bg-secondary py-10 px-4 font-semibold text-accent-foreground">
-            <Loader className="w-10 h-10" />
-            Loading tasks…
           </div>
         ) : filteredList.length ? (
           filteredList.map((task: TaskType, index: number) => (
