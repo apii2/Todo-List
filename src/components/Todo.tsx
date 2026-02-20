@@ -2,37 +2,27 @@
 
 import TaskList from "@/components/TaskList";
 import { MoonStar, Pencil, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { TaskType } from "@/types/TaskType";
 import { toast } from "sonner";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { addTodo, getTodos } from "@/services/todoServices";
 import { useQuery } from "@tanstack/react-query";
+import { ThemeType } from "@/utils/useTheme";
 
-export default function Todo() {
-  const [newTask, setNewTask] = useState("");
-  const [isLight, setIsLight] = useState(true);
+export default function Todo({ theme, setTheme }: { theme: ThemeType; setTheme: React.Dispatch<React.SetStateAction<ThemeType>> }) {
   const [tasks, setTasks] = useState<TaskType[]>([]);
+  const [newTask, setNewTask] = useState("");
   const [refresh, setRefresh] = useState(0);
 
-  const { data: todos, error } = useQuery({
+  const { data, error } = useQuery({
     queryKey: ["todos", refresh],
-    queryFn: getTodos,
+    queryFn: async () => {
+      const res = await getTodos();
+      setTasks(res ? res.results : []);
+      return res;
+    },
   });
-
-  useEffect(() => {
-    if (todos) {
-      setTasks(todos.results);
-    }
-  }, [todos]);
-
-  useEffect(() => {
-    if (isLight) {
-      document.documentElement.classList.remove("dark");
-    } else {
-      document.documentElement.classList.add("dark");
-    }
-  }, [isLight]);
 
   const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -75,24 +65,23 @@ export default function Todo() {
   };
 
   return (
-    <div className="w-full max-w-[86%] sm:max-w-xl min-h-screen md:min-w-lg">
+    <div className="w-full max-w-[86%] sm:max-w-xl min-h-screen md:min-w-lg pt-20">
       <header className="w-full text-white flex items-center justify-between">
         <h1 className="uppercase text-4xl font-bold tracking-[1rem]">Todo</h1>
 
         <div className="relative group">
-          {isLight ? (
+          {theme === "light" ? (
             <MoonStar
               className="w-6 h-6 cursor-pointer"
-              onClick={() => setIsLight(false)}
+              onClick={() => setTheme("dark")}
             />
           ) : (
             <Sun
               className="w-6 h-6 cursor-pointer"
-              onClick={() => setIsLight(true)}
+              onClick={() => setTheme("light")}
             />
           )}
 
-          {/* Floating tooltip */}
           <div
             className="absolute top-0 right-0 translate-x-full
               bg-white text-black text-sm px-2 pt-1 rounded 
@@ -100,7 +89,7 @@ export default function Todo() {
               transition-opacity duration-500 pointer-events-none
               whitespace-nowrap shadow-lg"
           >
-            {isLight ? "Switch to dark mode" : "Switch to light mode"}
+            {theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
           </div>
         </div>
       </header>
