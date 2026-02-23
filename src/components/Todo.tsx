@@ -1,6 +1,12 @@
 "use client";
 
-import TaskList from "@/components/TaskList";
+import dynamic from "next/dynamic";
+
+const TaskList = dynamic(() => import("@/components/TaskList"), {
+  ssr: false,
+  loading: () => <p>Loading tasks...</p>,
+});
+
 import { MoonStar, Pencil, Sun } from "lucide-react";
 import React, { useState } from "react";
 import { TaskType } from "@/types/TaskType";

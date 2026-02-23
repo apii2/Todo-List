@@ -45,7 +45,7 @@ body {
   font-family: var(--font-josefin-sans), sans-serif;
   background: var(--background);
   background-image: var(--background-image);
-  @apply min-h-screen bg-no-repeat! bg-fixed! bg-top! bg-size-[100%_38%]! flex items-start justify-center;
+  @apply min-h-screen bg-no-repeat! bg-fixed! bg-top! bg-size-[100%_38%]! flex items-start justify-center transition-all;
 }
 
 html, body {
