@@ -17,7 +17,7 @@ To run this project, you need to have the following installed:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/Todo-List.git
+git clone https://github.com/apii2/Todo-List.git
 cd Todo-List
 ```
 
